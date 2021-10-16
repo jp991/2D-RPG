@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,8 +14,9 @@ public class DialogueManager : MonoBehaviour
     private Queue<string> sentences;
     
     public TextMeshProUGUI dialogueDescriptionText;
-
-
+    public Transform gateObject;
+    public GameObject dialogueNpcController;
+    
     private void Awake()
     {
         instance = this;
@@ -54,6 +56,7 @@ public class DialogueManager : MonoBehaviour
 
     public IEnumerator TypingEffect(string sentence)
     {
+        
         dialogueDescriptionText.text = "";
         foreach (char letter in sentence)
         {
@@ -66,8 +69,14 @@ public class DialogueManager : MonoBehaviour
     {
         if (FindObjectOfType<GroupedDialogue>().CheckIfListIsEmpty())
         {
+            sentences.Clear();
             UIManager.instance.SetDialoguePanel();
             GameManager.instance.pauseGame = false;
+            gateObject.DOMoveX(2f, 2f).OnComplete(() =>
+            {
+                dialogueNpcController.SetActive(false);
+                gateObject.gameObject.SetActive(false);
+            });
         }
         else
         {

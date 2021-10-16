@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,9 +12,23 @@ public class PlayerController : MonoBehaviour
 
     private Vector2 moveVector;
     private Rigidbody2D rb;
+    private Animator animator;
+    private EnemyController enemyController;
+    
+    
+    public Transform mainCam;
+    public Transform wallCollider;
+    private bool isPlayerTriggerToMoveCamera;
 
+    public GameObject weaponObj;
+    private bool isWeaponEquipped;
+
+    public GameObject weaponCanvas;
+    
     private void Start()
     {
+        enemyController = FindObjectOfType<EnemyController>();
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -24,6 +38,20 @@ public class PlayerController : MonoBehaviour
 
         HandleInputs();
         HandleScale();
+
+        if (isPlayerTriggerToMoveCamera)
+        {
+            isPlayerTriggerToMoveCamera = false;
+            wallCollider.DOMoveX(14f,2f);
+            transform.DOMoveX(16f, 2f);
+            mainCam.transform.DOMoveX(23f, 2f).OnComplete(()=> weaponCanvas.SetActive(true));
+        }
+
+        if (isWeaponEquipped && Input.GetMouseButtonDown(0))
+        {
+            animator.SetTrigger("Attack");
+        }
+        
     }
     
     void FixedUpdate()
@@ -32,7 +60,6 @@ public class PlayerController : MonoBehaviour
         // handling player movement
         rb.MovePosition(rb.position + moveVector * (moveSpeed * Time.fixedDeltaTime));
     }
-    
     
     void HandleInputs()
     {
@@ -52,6 +79,28 @@ public class PlayerController : MonoBehaviour
         else
         {
             transform.localScale = new Vector3(-1, 1, 1);
+        }
+
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Weapon"))
+        {
+            weaponCanvas.SetActive(false);
+            enemyController.ActivateEnemy();
+            isWeaponEquipped = true;
+            other.gameObject.SetActive(false);
+            weaponObj.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("MoveCameraTowardsNewLocation"))
+        {
+            other.isTrigger = false;
+            isPlayerTriggerToMoveCamera = true;
         }
 
     }
