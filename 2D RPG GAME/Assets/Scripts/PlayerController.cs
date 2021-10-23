@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
-
+    
     private float horizontal;
     private float vertical;
 
@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
     private EnemyController enemyController;
-    
     
     public Transform mainCam;
     public Transform wallCollider;
@@ -50,8 +49,12 @@ public class PlayerController : MonoBehaviour
         if (isWeaponEquipped && Input.GetMouseButtonDown(0))
         {
             animator.SetTrigger("Attack");
-        }
+        } 
         
+        else if (isWeaponEquipped && Input.GetMouseButtonDown(1))
+        {
+            animator.SetTrigger("SwordAttack");
+        }
     }
     
     void FixedUpdate()
@@ -92,6 +95,13 @@ public class PlayerController : MonoBehaviour
             isWeaponEquipped = true;
             other.gameObject.SetActive(false);
             weaponObj.SetActive(true);
+        }
+
+        if (other.gameObject.CompareTag("QuestGiver"))
+        {
+            GameManager.instance.pauseGame = true;
+            isWeaponEquipped = true;
+            UIManager.instance.SetQuestPanel();
         }
     }
 

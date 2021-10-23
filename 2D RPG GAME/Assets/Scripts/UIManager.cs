@@ -9,7 +9,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private CanvasGroup dialoguePanel;
     [SerializeField] private RectTransform dialogueDataHolder;
-
+    [SerializeField] private GameObject questPanel;
     
     private void Awake()
     {
@@ -34,6 +34,18 @@ public class UIManager : MonoBehaviour
         }
     }
 
-  
+    public void SetQuestPanel(bool isOff = false)
+    {
+        if (!isOff)
+        {
+            questPanel.SetActive(true);
+            questPanel.transform.DOScale(1f, 0.5f).From(0f).SetEase(Ease.OutQuart);
+        }
+        else
+        {
+            questPanel.SetActive(false);
+            questPanel.transform.DOScale(0f, 0.5f).From(1f).SetEase(Ease.InQuart);
+        }
+    }
     
 }

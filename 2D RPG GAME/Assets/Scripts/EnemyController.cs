@@ -16,7 +16,9 @@ public class EnemyController : MonoBehaviour
 
     [SerializeField] private int health = 3;
     private bool stopMoving;
-    
+
+
+    public event Action onDead;
     
     private void Awake()
     {
@@ -71,15 +73,15 @@ public class EnemyController : MonoBehaviour
 
     void EnemyDead()
     {
+        onDead?.Invoke();
         foreach (var rb in bodyRbs)
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.AddForce(new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)) * 5f, ForceMode2D.Impulse);
-            rb.transform.DOScale(0f, 2f);
-            if (rb.transform.DOScale(0f, 2f).IsComplete())
+            rb.transform.DOScale(0f, 2f).OnComplete(() =>
             {
                 gameObject.SetActive(false);
-            }
+            });
         }
     }
 }
